@@ -1,0 +1,20 @@
+{
+  "questions": [
+    {
+      "id": "dbpedia_1",
+      "question": "Who are the gymnasts coached by Amanda Reddin?"
+    },
+    {
+      "id": "dbpedia_2",
+      "question": "How many superpowers does wonder woman have?"
+    },
+    {
+      "id": "dbpedia_3",
+      "question": "When did Margaret Mead marry Gregory Bateson?"
+    },
+    {
+      "id": "dbpedia_4",
+      "question": "Is Azerbaijan a member of European Go Federation?"
+    }
+  ]
+}
