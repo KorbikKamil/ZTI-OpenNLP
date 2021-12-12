@@ -12,6 +12,10 @@ import java.io.InputStream;
 import java.util.ArrayList;
 
 public class TypePrediction {
+    private static final String CATEGORY_RESOURCE = "resource";
+    private static final String CATEGORY_LITERAL = "literal";
+    private static final String CATEGORY_BOOLEAN = "boolean";
+
     private TokenizerME tokenizer;
     private NameFinderME nameFinderOrgME;
     private NameFinderME nameFinderPerME;
@@ -50,10 +54,11 @@ public class TypePrediction {
             lemmatizer = new DictionaryLemmatizer(dictLemmatizer);
         }
     }
-    public PredictionData GetPrediction(String pyt) throws IOException {
+
+    public PredictionData getPrediction(String questionString) throws IOException {
         //wyciaganie metadanych
         Question question = new Question(
-                pyt,
+                questionString,
                 tokenizer,
                 nameFinderOrgME,
                 nameFinderPerME,
@@ -65,17 +70,31 @@ public class TypePrediction {
         System.out.println(question.toString());
 
         //wybor kategorii
+        String category = getCategory(question);
 
         //wybor typu
-
-
         //Tymczasowe
-        ArrayList<String> types = new ArrayList<String>();
+        ArrayList<String> types = new ArrayList<>();
         types.add("T1");
         types.add("T2");
-        PredictionData pred = new PredictionData("P1", types);
 
-        return pred;
+        return new PredictionData(category, types);
+    }
+
+    /**
+     * @param question analyzed question with additional data
+     * @return one of those categories:
+     * resource,
+     * literal,
+     * boolean.
+     */
+    private String getCategory(Question question) {
+        if ("be".equals(question.getLemmatizated().get(0))) { //TODO: other cases eg. Marie, are you hungry?
+            return CATEGORY_BOOLEAN;
+        } else if ("when".equals(question.getWhWord())) {
+            return CATEGORY_LITERAL;
+        }
+        return "";
     }
 
 }

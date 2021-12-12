@@ -24,7 +24,7 @@ public class Main {
                     Scanner scanner2 = new Scanner(System.in);
                     userInput = scanner2.nextLine();
                     TypePrediction tp = new TypePrediction();
-                    System.out.println(tp.GetPrediction(userInput).getString());
+                    System.out.println(tp.getPrediction(userInput).getString());
                     break;
                 case 2:
                     System.out.println("Podaj sciezke do pliku");
@@ -37,7 +37,7 @@ public class Main {
                     {
                         JSONObject object = questions.getJSONObject(i);
                         String questionString = object.getString("question");
-                        PredictionData pd = tp2.GetPrediction(questionString);
+                        PredictionData pd = tp2.getPrediction(questionString);
                         object.put("category", pd.category);
                         object.put("types", pd.types);
                     }
