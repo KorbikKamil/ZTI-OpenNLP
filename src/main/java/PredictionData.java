@@ -8,10 +8,10 @@ public class PredictionData {
         category=cat;
         types=ty;
     }
-    public String GetString(){
+    public String getString(){
         String gString;
-        gString = "category: " + category;
-        gString += "\ntypes" + types.toString();
+        gString = "category: " + category + "\n";
+        gString += "types: " + types.toString() + "\n";
         return gString;
     }
 }

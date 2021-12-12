@@ -13,8 +13,6 @@ public class Main {
             System.out.println("|2 - Przewiduj z pliku (JSON)                |");
             System.out.println("|3 - Wyjdz                                   |");
             System.out.println("|============================================|");
-           
-
 
             Scanner scanner = new Scanner(System.in);
 
@@ -25,8 +23,8 @@ public class Main {
                     System.out.println("Wprowadz pytanie");
                     Scanner scanner2 = new Scanner(System.in);
                     userInput = scanner2.nextLine();
-                    TypePrediction tp = new TypePrediction(userInput);
-                    System.out.println(tp.GetPrediction().GetString());
+                    TypePrediction tp = new TypePrediction();
+                    System.out.println(tp.GetPrediction(userInput).getString());
                     break;
                 case 2:
                     System.out.println("Podaj sciezke do pliku");
@@ -34,12 +32,12 @@ public class Main {
                     userInput = scanner3.nextLine();
                     JSONObject jsonObject = JSONInputReader.parseJSONFile(userInput);
                     JSONArray questions = jsonObject.getJSONArray("questions");
+                    TypePrediction tp2 = new TypePrediction();
                     for(int i = 0; i < questions.length(); i++)
                     {
                         JSONObject object = questions.getJSONObject(i);
                         String questionString = object.getString("question");
-                        TypePrediction tp2 = new TypePrediction(questionString);
-                        PredictionData pd = tp2.GetPrediction();
+                        PredictionData pd = tp2.GetPrediction(questionString);
                         object.put("category", pd.category);
                         object.put("types", pd.types);
                     }
