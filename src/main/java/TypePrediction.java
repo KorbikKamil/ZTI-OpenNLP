@@ -60,7 +60,7 @@ public class TypePrediction {
         }
     }
 
-    public PredictionData getPrediction(String questionString) throws IOException {
+    public PredictionData getPrediction(String questionString, boolean showDataInConsole) throws IOException {
         //wyciaganie metadanych
         Question question = new Question(
                 questionString,
@@ -72,7 +72,9 @@ public class TypePrediction {
                 lemmatizer
         );
 
-        System.out.println(question);
+        if(showDataInConsole) {
+            System.out.println(question);
+        }
 
         //wybor kategorii i typu
         return generatePredictionData(question);
@@ -104,7 +106,7 @@ public class TypePrediction {
         {
             return new PredictionData(CATEGORY_RESOURCE, Arrays.asList(""));
         }
-        return null;
+        return new PredictionData(CATEGORY_RESOURCE, Arrays.asList(""));
     }
 
 }
