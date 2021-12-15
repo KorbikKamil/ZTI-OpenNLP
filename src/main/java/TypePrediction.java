@@ -16,12 +16,12 @@ public class TypePrediction {
     private static final String CATEGORY_LITERAL = "literal";
     private static final String CATEGORY_BOOLEAN = "boolean";
 
-    private TokenizerME tokenizer;
-    private NameFinderME nameFinderOrgME;
-    private NameFinderME nameFinderPerME;
-    private NameFinderME nameFinderLocME;
-    private POSTaggerME posTagger;
-    private DictionaryLemmatizer lemmatizer;
+    private final TokenizerME tokenizer;
+    private final NameFinderME nameFinderOrgME;
+    private final NameFinderME nameFinderPerME;
+    private final NameFinderME nameFinderLocME;
+    private final POSTaggerME posTagger;
+    private final DictionaryLemmatizer lemmatizer;
 
     public TypePrediction() throws IOException {
         {
@@ -67,7 +67,7 @@ public class TypePrediction {
                 lemmatizer
         );
 
-        System.out.println(question.toString());
+        System.out.println(question);
 
         //wybor kategorii
         String category = getCategory(question);
@@ -89,10 +89,18 @@ public class TypePrediction {
      * boolean.
      */
     private String getCategory(Question question) {
-        if ("be".equals(question.getLemmatizated().get(0))) { //TODO: other cases eg. Marie, are you hungry?
+        if ("be".equals(question.getLemmatizated().get(0))
+        ) { //TODO: other cases eg. Marie, are you hungry?
             return CATEGORY_BOOLEAN;
-        } else if ("when".equals(question.getWhWord())) {
+        } else if ("when".equals(question.getWhWord())
+                || "how".equals(question.getWhWord())
+        ) {
             return CATEGORY_LITERAL;
+        } else if ("who".equals(question.getWhWord())
+                || "whom".equals(question.getWhWord())
+                || "where".equals(question.getWhWord())
+        ) {
+            return CATEGORY_RESOURCE;
         }
         return "";
     }
