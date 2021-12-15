@@ -9,12 +9,17 @@ import opennlp.tools.tokenize.TokenizerModel;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.ArrayList;
+import java.util.Arrays;
 
 public class TypePrediction {
     private static final String CATEGORY_RESOURCE = "resource";
     private static final String CATEGORY_LITERAL = "literal";
     private static final String CATEGORY_BOOLEAN = "boolean";
+
+    public static final String TYPE_BOOLEAN = "boolean";
+    public static final String TYPE_STRING = "string";
+    public static final String TYPE_DATE = "date";
+    public static final String TYPE_NUMBER = "number";
 
     private final TokenizerME tokenizer;
     private final NameFinderME nameFinderOrgME;
@@ -69,16 +74,8 @@ public class TypePrediction {
 
         System.out.println(question);
 
-        //wybor kategorii
-        String category = getCategory(question);
-
-        //wybor typu
-        //Tymczasowe
-        ArrayList<String> types = new ArrayList<>();
-        types.add("T1");
-        types.add("T2");
-
-        return new PredictionData(category, types);
+        //wybor kategorii i typu
+        return generatePredictionData(question);
     }
 
     /**
@@ -88,21 +85,26 @@ public class TypePrediction {
      * literal,
      * boolean.
      */
-    private String getCategory(Question question) {
-        if ("be".equals(question.getLemmatizated().get(0))
-        ) { //TODO: other cases eg. Marie, are you hungry?
-            return CATEGORY_BOOLEAN;
-        } else if ("when".equals(question.getWhWord())
-                || "how".equals(question.getWhWord())
-        ) {
-            return CATEGORY_LITERAL;
-        } else if ("who".equals(question.getWhWord())
-                || "whom".equals(question.getWhWord())
-                || "where".equals(question.getWhWord())
-        ) {
-            return CATEGORY_RESOURCE;
+    private PredictionData generatePredictionData(Question question) {
+        if ("be".equals(question.getLemmatizated().get(0)))
+        { //TODO: other cases eg. Marie, are you hungry?
+            return new PredictionData(CATEGORY_BOOLEAN, Arrays.asList(TYPE_BOOLEAN));
         }
-        return "";
+        else if(question.getWhWords().contains("when")) /*Zwracamy datę, string lub liczbę*/
+        {
+            return new PredictionData(CATEGORY_LITERAL, Arrays.asList(TYPE_DATE));
+        }
+        else if(question.getWhWords().contains("how"))
+        {
+            return new PredictionData(CATEGORY_LITERAL, Arrays.asList(""));
+        }
+        else if (question.getWhWords().contains("who")
+                || question.getWhWords().contains("whom")
+                || question.getWhWords().contains("where"))
+        {
+            return new PredictionData(CATEGORY_RESOURCE, Arrays.asList(""));
+        }
+        return null;
     }
 
 }

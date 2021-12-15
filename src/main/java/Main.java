@@ -24,7 +24,7 @@ public class Main {
                     Scanner scanner2 = new Scanner(System.in);
                     userInput = scanner2.nextLine();
                     TypePrediction tp = new TypePrediction();
-                    System.out.println(tp.getPrediction(userInput).getString());
+                    System.out.println(tp.getPrediction(userInput));
                     break;
                 case 2:
                     System.out.println("Podaj sciezke do pliku");

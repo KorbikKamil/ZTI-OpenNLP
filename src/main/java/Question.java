@@ -1,28 +1,23 @@
 import opennlp.tools.lemmatizer.DictionaryLemmatizer;
 import opennlp.tools.namefind.NameFinderME;
-import opennlp.tools.namefind.TokenNameFinderModel;
-import opennlp.tools.postag.POSModel;
 import opennlp.tools.postag.POSTaggerME;
 import opennlp.tools.tokenize.TokenizerME;
-import opennlp.tools.tokenize.TokenizerModel;
 import opennlp.tools.util.Span;
 
-import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
 public class Question {
-    private String entire_text;
+    private String entireText;
     private List<String> tokens;
     private List<Span> organizations;
     private List<Span> persons;
     private List<Span> locations;
-    private List<String> parts_of_speech;
+    private List<String> partsOfSpeech;
     private List<String> lemmatizated;
-    private String wh_word;
+    private List<String> wh_words;
 
     Question(String question_text,
              TokenizerME tokenizer,
@@ -32,7 +27,7 @@ public class Question {
              POSTaggerME posTagger,
              DictionaryLemmatizer lemmatizer
     ) throws IOException {
-        entire_text = question_text;
+        entireText = question_text;
 
         String[] temp_tokens;
 
@@ -61,7 +56,7 @@ public class Question {
         //Part of speech tagging
         {
             temp_parts_of_speech = posTagger.tag(temp_tokens);
-            parts_of_speech = Arrays.asList(temp_parts_of_speech);
+            partsOfSpeech = Arrays.asList(temp_parts_of_speech);
         }
 
         //Lemmatization
@@ -71,18 +66,28 @@ public class Question {
 
         //Checking for wh-word
         {
-            int wrb_index = parts_of_speech.indexOf("WRB");
-            if(wrb_index == -1){
-                wh_word = null;
-            }else{
-                wh_word = lemmatizated.get(wrb_index);
-            }
+            int wrb_index = partsOfSpeech.indexOf("WRB"); //https://www.ling.upenn.edu/hist-corpora/annotation/pos-wh.htm
+            wh_words = new ArrayList<>();
+            wh_words.add(getWordsOfTag("WRB"));
+            wh_words.add(getWordsOfTag("WDT"));
+            wh_words.add(getWordsOfTag("WP"));
+            wh_words.add(getWordsOfTag("WP$"));
+
+            while(wh_words.remove(null));
         }
 
     }
 
+    private String getWordsOfTag(String tag) {
+        int index = partsOfSpeech.indexOf(tag);
+        if (index >= 0) {
+            return lemmatizated.get(index);
+        }
+        return null;
+    }
+
     public String getEntireText() {
-        return entire_text;
+        return entireText;
     }
     public List<String> getTokens() {
         return tokens;
@@ -97,25 +102,25 @@ public class Question {
         return locations;
     }
     public List<String> getPartsOfSpeech(){
-        return parts_of_speech;
+        return partsOfSpeech;
     }
     public List<String> getLemmatizated(){
         return lemmatizated;
     }
-    public String getWhWord(){
-        return wh_word;
+    public List<String> getWhWords(){
+        return wh_words;
     }
 
     public String toString(){
-        String to_ret = entire_text + "\n";
+        String to_ret = entireText + "\n";
         to_ret += "Tokens: " + tokens.toString() + "\n";
         to_ret += "Named entities: \n";
         to_ret += "Organizations: " + organizations.toString() + "\n";
         to_ret += "Persons: " + persons.toString() + "\n";
         to_ret += "Locations: " + locations.toString() + "\n";
-        to_ret += "Parts of speech: " + parts_of_speech.toString() + "\n";
+        to_ret += "Parts of speech: " + partsOfSpeech.toString() + "\n";
         to_ret += "Lemmatizated: " + lemmatizated.toString() + "\n";
-        to_ret += "Wh-word: " + wh_word + "\n";
+        to_ret += "Wh-word: " + wh_words + "\n";
         return to_ret;
     }
 }
