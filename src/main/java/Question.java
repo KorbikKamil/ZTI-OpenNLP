@@ -66,22 +66,36 @@ public class Question {
 
         //Checking for wh-word
         {
-            int wrb_index = partsOfSpeech.indexOf("WRB"); //https://www.ling.upenn.edu/hist-corpora/annotation/pos-wh.htm
+            //https://www.ling.upenn.edu/hist-corpora/annotation/pos-wh.htm
             wh_words = new ArrayList<>();
-            wh_words.add(getWordsOfTag("WRB"));
-            wh_words.add(getWordsOfTag("WDT"));
-            wh_words.add(getWordsOfTag("WP"));
-            wh_words.add(getWordsOfTag("WP$"));
+            wh_words.add(getWhWordsOfTag("WRB"));
+            wh_words.add(getWhWordsOfTag("WDT"));
+            wh_words.add(getWhWordsOfTag("WP"));
+            wh_words.add(getWhWordsOfTag("WP$"));
 
-            while(wh_words.remove(null));
+            while (wh_words.remove(null)) ;
         }
 
     }
 
-    private String getWordsOfTag(String tag) {
+    private String getWhWordsOfTag(String tag) {
         int index = partsOfSpeech.indexOf(tag);
         if (index >= 0) {
-            return lemmatizated.get(index);
+            String whWord = lemmatizated.get(index);
+            if ("how".equals(whWord)) {
+                System.out.println("how " + tokens.get(index + 1) + " -" + lemmatizated.get(index + 1) + "-");
+            }
+            if ("how".equals(whWord)
+                    && ("O".equals(lemmatizated.get(index + 1))
+                    || "many".equals(lemmatizated.get(index + 1))
+                    || "much".equals(lemmatizated.get(index + 1))
+                    || "deep".equals(lemmatizated.get(index + 1))
+                    || "old".equals(lemmatizated.get(index + 1))
+                    || "long".equals(lemmatizated.get(index + 1)))) {
+                System.out.println("dopisujemy number");
+                whWord += "number";
+            }
+            return whWord;
         }
         return null;
     }
@@ -89,29 +103,36 @@ public class Question {
     public String getEntireText() {
         return entireText;
     }
+
     public List<String> getTokens() {
         return tokens;
     }
-    public List<Span> getOrganizations(){
+
+    public List<Span> getOrganizations() {
         return organizations;
     }
-    public List<Span> getPersons(){
+
+    public List<Span> getPersons() {
         return persons;
     }
-    public List<Span> getLocations(){
+
+    public List<Span> getLocations() {
         return locations;
     }
-    public List<String> getPartsOfSpeech(){
+
+    public List<String> getPartsOfSpeech() {
         return partsOfSpeech;
     }
-    public List<String> getLemmatizated(){
+
+    public List<String> getLemmatizated() {
         return lemmatizated;
     }
-    public List<String> getWhWords(){
+
+    public List<String> getWhWords() {
         return wh_words;
     }
 
-    public String toString(){
+    public String toString() {
         String to_ret = entireText + "\n";
         to_ret += "Tokens: " + tokens.toString() + "\n";
         to_ret += "Named entities: \n";

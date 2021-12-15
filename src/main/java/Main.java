@@ -3,7 +3,9 @@ import org.json.JSONObject;
 
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.HashSet;
 import java.util.Scanner;
+import java.util.Set;
 
 public class Main {
     public static void main(String[] args) throws IOException {
@@ -51,6 +53,8 @@ public class Main {
                 case 3:
                     int totalQuestionsNumber = 0;
                     int correctCategoriesNumber = 0;
+                    int totalQuestionsLiteralCatNumber = 0;
+                    int correctTypeNumber = 0;
                     System.out.println("Podaj sciezke do pliku");
                     Scanner scanner4 = new Scanner(System.in);
                     userInput = scanner4.nextLine();
@@ -62,13 +66,24 @@ public class Main {
                         JSONObject object = questions2.getJSONObject(i);
                         String questionString = object.getString("question");
                         String correctCategory = object.getString("category");
+                        String correctType = object.getJSONArray("type").get(0).toString();
+
                         PredictionData pd = tp3.getPrediction(questionString, false);
                         if(pd.category.equals(correctCategory)){
                             correctCategoriesNumber++;
                         }
+                        if(correctCategory.equals(TypePrediction.CATEGORY_LITERAL) && pd.category.equals(correctCategory)) {
+                            totalQuestionsLiteralCatNumber++;
+                            if(correctType.equals(pd.types.get(0))) {
+                                correctTypeNumber++;
+                            } else {
+                                System.out.println("question: " + questionString + "; correct type: " + correctType + "; our type:" + pd.types.get(0));
+                            }
+                        }
                         totalQuestionsNumber++;
                     }
                     System.out.println("Correct categories: " + String.valueOf(correctCategoriesNumber) + "/" + String.valueOf(totalQuestionsNumber) + " (" + String.valueOf((double)correctCategoriesNumber / (double)totalQuestionsNumber) + ")");
+                    System.out.println("Correct types: " + String.valueOf(correctTypeNumber) + "/" + String.valueOf(totalQuestionsLiteralCatNumber) + " (" + String.valueOf((double)correctTypeNumber / (double)totalQuestionsLiteralCatNumber) + ")");
                     break;
                 case 4:
                     System.exit(0);

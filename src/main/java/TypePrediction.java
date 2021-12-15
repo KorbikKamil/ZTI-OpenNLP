@@ -12,9 +12,9 @@ import java.io.InputStream;
 import java.util.Arrays;
 
 public class TypePrediction {
-    private static final String CATEGORY_RESOURCE = "resource";
-    private static final String CATEGORY_LITERAL = "literal";
-    private static final String CATEGORY_BOOLEAN = "boolean";
+    public static final String CATEGORY_RESOURCE = "resource";
+    public static final String CATEGORY_LITERAL = "literal";
+    public static final String CATEGORY_BOOLEAN = "boolean";
 
     public static final String TYPE_BOOLEAN = "boolean";
     public static final String TYPE_STRING = "string";
@@ -72,7 +72,7 @@ public class TypePrediction {
                 lemmatizer
         );
 
-        if(showDataInConsole) {
+        if (showDataInConsole) {
             System.out.println(question);
         }
 
@@ -88,23 +88,23 @@ public class TypePrediction {
      * boolean.
      */
     private PredictionData generatePredictionData(Question question) {
-        if ("be".equals(question.getLemmatizated().get(0)))
-        { //TODO: other cases eg. Marie, are you hungry?
-            return new PredictionData(CATEGORY_BOOLEAN, Arrays.asList(TYPE_BOOLEAN));
-        }
-        else if(question.getWhWords().contains("when")) /*Zwracamy datę, string lub liczbę*/
-        {
+        if (question.getWhWords().contains("when")) /*Zwracamy datę, string lub liczbę*/ {
             return new PredictionData(CATEGORY_LITERAL, Arrays.asList(TYPE_DATE));
-        }
-        else if(question.getWhWords().contains("how"))
-        {
-            return new PredictionData(CATEGORY_LITERAL, Arrays.asList(""));
-        }
-        else if (question.getWhWords().contains("who")
+        } else if (question.getWhWords().contains("hownumber")) {
+            System.out.println("hownumber " + question.getEntireText());
+            return new PredictionData(CATEGORY_LITERAL, Arrays.asList(TYPE_NUMBER));
+        } else if (question.getWhWords().contains("how")
+                || question.getWhWords().contains("why")) {
+            return new PredictionData(CATEGORY_LITERAL, Arrays.asList(TYPE_STRING));
+        } else if (question.getWhWords().contains("who")
                 || question.getWhWords().contains("whom")
-                || question.getWhWords().contains("where"))
-        {
+                || question.getWhWords().contains("whose")
+                || question.getWhWords().contains("which")
+                || question.getWhWords().contains("what")
+                || question.getWhWords().contains("where")) {
             return new PredictionData(CATEGORY_RESOURCE, Arrays.asList(""));
+        } else if (question.getLemmatizated().contains("be")) { //TODO: other cases eg. Marie, are you hungry?
+            return new PredictionData(CATEGORY_BOOLEAN, Arrays.asList(TYPE_BOOLEAN));
         }
         return new PredictionData(CATEGORY_RESOURCE, Arrays.asList(""));
     }
