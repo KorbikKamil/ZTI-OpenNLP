@@ -88,24 +88,36 @@ public class TypePrediction {
      * boolean.
      */
     private PredictionData generatePredictionData(Question question) {
-        if (question.getWhWords().contains("when")) /*Zwracamy datę, string lub liczbę*/ {
-            return new PredictionData(CATEGORY_LITERAL, Arrays.asList(TYPE_DATE));
-        } else if (question.getWhWords().contains("hownumber")) {
-            System.out.println("hownumber " + question.getEntireText());
-            return new PredictionData(CATEGORY_LITERAL, Arrays.asList(TYPE_NUMBER));
-        } else if (question.getWhWords().contains("how")
-                || question.getWhWords().contains("why")) {
-            return new PredictionData(CATEGORY_LITERAL, Arrays.asList(TYPE_STRING));
-        } else if (question.getWhWords().contains("who")
-                || question.getWhWords().contains("whom")
-                || question.getWhWords().contains("whose")
-                || question.getWhWords().contains("which")
-                || question.getWhWords().contains("what")
-                || question.getWhWords().contains("where")) {
-            return new PredictionData(CATEGORY_RESOURCE, Arrays.asList(""));
-        } else if (question.getLemmatizated().contains("be")) { //TODO: other cases eg. Marie, are you hungry?
-            return new PredictionData(CATEGORY_BOOLEAN, Arrays.asList(TYPE_BOOLEAN));
+        if(question.getWhWords().isEmpty()){
+            if (question.getLemmatizated().get(0).equals("be") || question.getLemmatizated().get(0).equals("do")) {
+                return new PredictionData(CATEGORY_BOOLEAN, Arrays.asList(TYPE_BOOLEAN));
+            }else if(question.getLemmatizated().contains("count")){
+                return new PredictionData(CATEGORY_LITERAL, Arrays.asList(TYPE_NUMBER));
+            }else{
+                return new PredictionData(CATEGORY_RESOURCE, Arrays.asList(""));
+            }
+        }else{
+            if (question.getWhWords().contains("when")) /*Zwracamy datę, string lub liczbę*/ {
+                return new PredictionData(CATEGORY_LITERAL, Arrays.asList(TYPE_DATE));
+            } else if (question.getWhWords().contains("hownumber")) {
+                System.out.println("hownumber " + question.getEntireText());
+                return new PredictionData(CATEGORY_LITERAL, Arrays.asList(TYPE_NUMBER));
+            } else if (question.getWhWords().contains("how")
+                    || question.getWhWords().contains("why")
+                    || question.getWhWords().contains("whatbe")) {
+                return new PredictionData(CATEGORY_LITERAL, Arrays.asList(TYPE_STRING));
+            } else if (question.getWhWords().contains("who")
+                    || question.getWhWords().contains("whom")
+                    || question.getWhWords().contains("whose")
+                    || question.getWhWords().contains("which")
+                    || question.getWhWords().contains("what")
+                    || question.getWhWords().contains("where")) {
+                return new PredictionData(CATEGORY_RESOURCE, Arrays.asList(""));
+            } else if (question.getLemmatizated().contains("be")) { //TODO: other cases eg. Marie, are you hungry?
+                return new PredictionData(CATEGORY_BOOLEAN, Arrays.asList(TYPE_BOOLEAN));
+            }
         }
+
         return new PredictionData(CATEGORY_RESOURCE, Arrays.asList(""));
     }
 

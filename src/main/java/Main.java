@@ -52,8 +52,29 @@ public class Main {
                     break;
                 case 3:
                     int totalQuestionsNumber = 0;
-                    int correctCategoriesNumber = 0;
+
+                    //total questions by category
                     int totalQuestionsLiteralCatNumber = 0;
+                    int totalQuestionsResourceCatNumber = 0;
+                    int totalQuestionsBooleanCatNumber = 0;
+
+                    int correctCategoriesNumber = 0;
+
+                    //correct questions by category
+                    int correctLiteralCategoriesNumber = 0;
+                    int correctResourceCategoriesNumber = 0;
+                    int correctBooleanCategoriesNumber = 0;
+
+                    //total literal questions by type
+                    int totalDateTypeNumber = 0;
+                    int totalStringTypeNumber = 0;
+                    int totalNumberTypeNumber = 0;
+
+                    //correct literal questions by type
+                    int correctDateTypeNumber = 0;
+                    int correctStringTypeNumber = 0;
+                    int correctNumberTypeNumber = 0;
+
                     int correctTypeNumber = 0;
                     System.out.println("Podaj sciezke do pliku");
                     Scanner scanner4 = new Scanner(System.in);
@@ -71,19 +92,85 @@ public class Main {
                         PredictionData pd = tp3.getPrediction(questionString, false);
                         if(pd.category.equals(correctCategory)){
                             correctCategoriesNumber++;
+                            switch (correctCategory) {
+                                case TypePrediction.CATEGORY_LITERAL: {
+                                    correctLiteralCategoriesNumber++;
+                                    if(pd.types.contains(correctType)) {
+                                        switch (correctType) {
+                                            case TypePrediction.TYPE_DATE: {
+                                                correctDateTypeNumber++;
+                                                break;
+                                            }
+                                            case TypePrediction.TYPE_STRING: {
+                                                correctStringTypeNumber++;
+                                                break;
+                                            }
+                                            case TypePrediction.TYPE_NUMBER: {
+                                                correctNumberTypeNumber++;
+                                                break;
+                                            }
+                                        }
+                                    }
+                                    break;
+                                }
+                                case TypePrediction.CATEGORY_RESOURCE: {
+                                    correctResourceCategoriesNumber++;
+                                    break;
+                                }
+                                case TypePrediction.CATEGORY_BOOLEAN: {
+                                    correctBooleanCategoriesNumber++;
+                                    break;
+                                }
+                            }
                         }
-                        if(correctCategory.equals(TypePrediction.CATEGORY_LITERAL) && pd.category.equals(correctCategory)) {
+
+                        /*if(correctCategory.equals(TypePrediction.CATEGORY_LITERAL) && pd.category.equals(correctCategory)) {
                             totalQuestionsLiteralCatNumber++;
                             if(correctType.equals(pd.types.get(0))) {
                                 correctTypeNumber++;
                             } else {
                                 System.out.println("question: " + questionString + "; correct type: " + correctType + "; our type:" + pd.types.get(0));
                             }
+                        }*/
+                        switch (correctCategory) {
+                            case TypePrediction.CATEGORY_LITERAL: {
+                                totalQuestionsLiteralCatNumber++;
+                                switch (correctType){
+                                    case TypePrediction.TYPE_DATE:{
+                                        totalDateTypeNumber++;
+                                        break;
+                                    }
+                                    case TypePrediction.TYPE_STRING:{
+                                        totalStringTypeNumber++;
+                                        break;
+                                    }
+                                    case TypePrediction.TYPE_NUMBER:{
+                                        totalNumberTypeNumber++;
+                                        break;
+                                    }
+                                }
+                                break;
+                            }
+                            case TypePrediction.CATEGORY_RESOURCE: {
+                                totalQuestionsResourceCatNumber++;
+                                break;
+                            }
+                            case TypePrediction.CATEGORY_BOOLEAN: {
+                                totalQuestionsBooleanCatNumber++;
+                                break;
+                            }
                         }
                         totalQuestionsNumber++;
                     }
+                    System.out.println("CATEGORIES");
                     System.out.println("Correct categories: " + String.valueOf(correctCategoriesNumber) + "/" + String.valueOf(totalQuestionsNumber) + " (" + String.valueOf((double)correctCategoriesNumber / (double)totalQuestionsNumber) + ")");
-                    System.out.println("Correct types: " + String.valueOf(correctTypeNumber) + "/" + String.valueOf(totalQuestionsLiteralCatNumber) + " (" + String.valueOf((double)correctTypeNumber / (double)totalQuestionsLiteralCatNumber) + ")");
+                    System.out.println("Correctly identified literal category: " + String.valueOf(correctLiteralCategoriesNumber) + "/" + String.valueOf(totalQuestionsLiteralCatNumber) + " (" + String.valueOf((double)correctLiteralCategoriesNumber / (double)totalQuestionsLiteralCatNumber) + ")");
+                    System.out.println("Correctly identified resource category: " + String.valueOf(correctResourceCategoriesNumber) + "/" + String.valueOf(totalQuestionsResourceCatNumber) + " (" + String.valueOf((double)correctResourceCategoriesNumber / (double)totalQuestionsResourceCatNumber) + ")");
+                    System.out.println("Correctly identified boolean category: " + String.valueOf(correctBooleanCategoriesNumber) + "/" + String.valueOf(totalQuestionsBooleanCatNumber) + " (" + String.valueOf((double)correctBooleanCategoriesNumber / (double)totalQuestionsBooleanCatNumber) + ")");
+                    System.out.println("LITERAL TYPES");
+                    System.out.println("Correctly identified date type: " + String.valueOf(correctDateTypeNumber) + "/" + String.valueOf(totalDateTypeNumber) + " (" + String.valueOf((double)correctDateTypeNumber / (double)totalDateTypeNumber) + ")");
+                    System.out.println("Correctly identified string type: " + String.valueOf(correctStringTypeNumber) + "/" + String.valueOf(totalStringTypeNumber) + " (" + String.valueOf((double)correctStringTypeNumber / (double)totalStringTypeNumber) + ")");
+                    System.out.println("Correctly identified number type: " + String.valueOf(correctNumberTypeNumber) + "/" + String.valueOf(totalNumberTypeNumber) + " (" + String.valueOf((double)correctNumberTypeNumber / (double)totalNumberTypeNumber) + ")");
                     break;
                 case 4:
                     System.exit(0);

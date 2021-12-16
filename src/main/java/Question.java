@@ -19,6 +19,8 @@ public class Question {
     private List<String> lemmatizated;
     private List<String> wh_words;
 
+    private List<String> whWordsTags;
+
     Question(String question_text,
              TokenizerME tokenizer,
              NameFinderME nameFinderOrgME,
@@ -27,6 +29,12 @@ public class Question {
              POSTaggerME posTagger,
              DictionaryLemmatizer lemmatizer
     ) throws IOException {
+        whWordsTags = new ArrayList<String>();
+        whWordsTags.add("WRB");
+        whWordsTags.add("WDT");
+        whWordsTags.add("WP");
+        whWordsTags.add("WP$");
+
         entireText = question_text;
 
         String[] temp_tokens;
@@ -67,18 +75,41 @@ public class Question {
         //Checking for wh-word
         {
             //https://www.ling.upenn.edu/hist-corpora/annotation/pos-wh.htm
-            wh_words = new ArrayList<>();
-            wh_words.add(getWhWordsOfTag("WRB"));
-            wh_words.add(getWhWordsOfTag("WDT"));
-            wh_words.add(getWhWordsOfTag("WP"));
-            wh_words.add(getWhWordsOfTag("WP$"));
-
-            while (wh_words.remove(null)) ;
+            wh_words = getWhWordsOfTag();
         }
 
     }
 
-    private String getWhWordsOfTag(String tag) {
+    private ArrayList<String> getWhWordsOfTag() {
+        ArrayList<String> to_return = new ArrayList<>();
+        for(int index = 0; index < partsOfSpeech.size(); ++index){
+            if(whWordsTags.contains(partsOfSpeech.get(index))){
+                String whWord = lemmatizated.get(index);
+                if ("how".equals(whWord)) {
+                    System.out.println("how " + tokens.get(index + 1) + " -" + lemmatizated.get(index + 1) + "-");
+                }
+                if ("how".equals(whWord)
+                        && ("O".equals(lemmatizated.get(index + 1))
+                        || "many".equals(lemmatizated.get(index + 1))
+                        || "much".equals(lemmatizated.get(index + 1))
+                        || "short".equals(lemmatizated.get(index + 1))
+                        || "deep".equals(lemmatizated.get(index + 1))
+                        || "old".equals(lemmatizated.get(index + 1))
+                        || "big".equals(lemmatizated.get(index + 1))
+                        || "long".equals(lemmatizated.get(index + 1)))) {
+                    System.out.println("dopisujemy number");
+                    whWord += "number";
+                }
+                if(("which".equals(whWord) || "what".equals(whWord)) && "be".equals(lemmatizated.get(index + 1))){
+                    whWord = "whatbe";
+                }
+                to_return.add(whWord);
+            }
+        }
+        return to_return;
+    }
+
+    /*private String getWhWordsOfTag(String tag) {
         int index = partsOfSpeech.indexOf(tag);
         if (index >= 0) {
             String whWord = lemmatizated.get(index);
@@ -98,7 +129,7 @@ public class Question {
             return whWord;
         }
         return null;
-    }
+    }*/
 
     public String getEntireText() {
         return entireText;
