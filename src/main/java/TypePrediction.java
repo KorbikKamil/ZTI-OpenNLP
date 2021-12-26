@@ -10,6 +10,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Arrays;
+import java.util.List;
 
 public class TypePrediction {
     public static final String CATEGORY_RESOURCE = "resource";
@@ -94,7 +95,7 @@ public class TypePrediction {
             }else if(question.getLemmatizated().contains("count")){
                 return new PredictionData(CATEGORY_LITERAL, Arrays.asList(TYPE_NUMBER));
             }else{
-                return new PredictionData(CATEGORY_RESOURCE, Arrays.asList(""));
+                return new PredictionData(CATEGORY_RESOURCE, generateResourceTypePrediction(question));
             }
         }else{
             if (question.getWhWords().contains("when")) /*Zwracamy datę, string lub liczbę*/ {
@@ -112,13 +113,19 @@ public class TypePrediction {
                     || question.getWhWords().contains("which")
                     || question.getWhWords().contains("what")
                     || question.getWhWords().contains("where")) {
-                return new PredictionData(CATEGORY_RESOURCE, Arrays.asList(""));
-            } else if (question.getLemmatizated().contains("be")) { //TODO: other cases eg. Marie, are you hungry?
+                return new PredictionData(CATEGORY_RESOURCE, generateResourceTypePrediction(question));
+            } else if (question.getLemmatizated().contains("be")) {
                 return new PredictionData(CATEGORY_BOOLEAN, Arrays.asList(TYPE_BOOLEAN));
             }
         }
 
-        return new PredictionData(CATEGORY_RESOURCE, Arrays.asList(""));
+        return new PredictionData(CATEGORY_RESOURCE, generateResourceTypePrediction(question));
+    }
+
+    private List<String> generateResourceTypePrediction(Question question){
+        //TODO
+
+        return Arrays.asList("dbo:Place");
     }
 
 }

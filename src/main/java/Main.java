@@ -3,6 +3,7 @@ import org.json.JSONObject;
 
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Scanner;
 import java.util.Set;
@@ -75,6 +76,9 @@ public class Main {
                     int correctStringTypeNumber = 0;
                     int correctNumberTypeNumber = 0;
 
+                    //correct resource questions
+                    int correctResourceTypesNumber = 0;
+
                     int correctTypeNumber = 0;
                     System.out.println("Podaj sciezke do pliku");
                     Scanner scanner4 = new Scanner(System.in);
@@ -87,7 +91,12 @@ public class Main {
                         JSONObject object = questions2.getJSONObject(i);
                         String questionString = object.getString("question");
                         String correctCategory = object.getString("category");
-                        String correctType = object.getJSONArray("type").get(0).toString();
+                        ArrayList<String> correctTypes = new ArrayList<String>();
+
+                        JSONArray correctTypeArr = object.getJSONArray("type");//.get(0).toString();
+                        for(int j = 0; j < correctTypeArr.length(); ++j){
+                            correctTypes.add(correctTypeArr.getString(j));
+                        }
 
                         PredictionData pd = tp3.getPrediction(questionString, false);
                         if(pd.category.equals(correctCategory)){
@@ -95,8 +104,8 @@ public class Main {
                             switch (correctCategory) {
                                 case TypePrediction.CATEGORY_LITERAL: {
                                     correctLiteralCategoriesNumber++;
-                                    if(pd.types.contains(correctType)) {
-                                        switch (correctType) {
+                                    if(correctTypes.contains(pd.types.get(0))) {
+                                        switch (pd.types.get(0)) {
                                             case TypePrediction.TYPE_DATE: {
                                                 correctDateTypeNumber++;
                                                 break;
@@ -115,6 +124,9 @@ public class Main {
                                 }
                                 case TypePrediction.CATEGORY_RESOURCE: {
                                     correctResourceCategoriesNumber++;
+                                    if(correctTypes.contains(pd.types.get(0))) {
+                                        correctResourceTypesNumber++;
+                                    }
                                     break;
                                 }
                                 case TypePrediction.CATEGORY_BOOLEAN: {
@@ -135,7 +147,7 @@ public class Main {
                         switch (correctCategory) {
                             case TypePrediction.CATEGORY_LITERAL: {
                                 totalQuestionsLiteralCatNumber++;
-                                switch (correctType){
+                                switch (correctTypes.get(0)){
                                     case TypePrediction.TYPE_DATE:{
                                         totalDateTypeNumber++;
                                         break;
@@ -171,6 +183,8 @@ public class Main {
                     System.out.println("Correctly identified date type: " + String.valueOf(correctDateTypeNumber) + "/" + String.valueOf(totalDateTypeNumber) + " (" + String.valueOf((double)correctDateTypeNumber / (double)totalDateTypeNumber) + ")");
                     System.out.println("Correctly identified string type: " + String.valueOf(correctStringTypeNumber) + "/" + String.valueOf(totalStringTypeNumber) + " (" + String.valueOf((double)correctStringTypeNumber / (double)totalStringTypeNumber) + ")");
                     System.out.println("Correctly identified number type: " + String.valueOf(correctNumberTypeNumber) + "/" + String.valueOf(totalNumberTypeNumber) + " (" + String.valueOf((double)correctNumberTypeNumber / (double)totalNumberTypeNumber) + ")");
+                    System.out.println("RESOURCES");
+                    System.out.println("Correctly identified resources type: " + String.valueOf(correctResourceTypesNumber) + "/" + String.valueOf(totalQuestionsResourceCatNumber) + " (" + String.valueOf((double)correctResourceTypesNumber / (double)totalQuestionsResourceCatNumber) + ")");
                     break;
                 case 4:
                     System.exit(0);
