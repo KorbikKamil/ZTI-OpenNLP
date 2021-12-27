@@ -1,3 +1,4 @@
+import org.apache.log4j.BasicConfigurator;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -10,6 +11,8 @@ import java.util.Set;
 
 public class Main {
     public static void main(String[] args) throws IOException {
+        BasicConfigurator.configure();
+
         while(true) {
             System.out.println("*=================== Menu ===================*");
             System.out.println("|1 - Przewiduj dla jednego zdania            |");

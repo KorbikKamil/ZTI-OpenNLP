@@ -5,6 +5,11 @@ import opennlp.tools.postag.POSModel;
 import opennlp.tools.postag.POSTaggerME;
 import opennlp.tools.tokenize.TokenizerME;
 import opennlp.tools.tokenize.TokenizerModel;
+import org.apache.jena.query.*;
+import org.apache.jena.rdf.model.Literal;
+import org.apache.jena.rdf.model.Model;
+import org.apache.jena.rdf.model.RDFNode;
+import org.apache.jena.rdf.model.Resource;
 
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -123,7 +128,17 @@ public class TypePrediction {
     }
 
     private List<String> generateResourceTypePrediction(Question question){
-        //TODO
+        String queryString = "PREFIX dbres: <http://dbpedia.org/resource/>\n" +
+                "PREFIX rdf:<http://www.w3.org/1999/02/22-rdf-syntax-ns#>\n" +
+                "select ?o where {dbres:Basketball rdf:type ?o} LIMIT 10";
+        try (QueryExecution qexec = QueryExecution.service("http://dbpedia.org/sparql", queryString)) {
+            ResultSet results = qexec.execSelect();
+            while (results.hasNext()) {
+                QuerySolution soln = results.nextSolution();
+                RDFNode name = soln.get("o");
+                System.out.println(soln);
+            }
+        }
 
         return Arrays.asList("dbo:Place");
     }
