@@ -103,7 +103,7 @@ public class TypePrediction {
                 return new PredictionData(CATEGORY_RESOURCE, generateResourceTypePrediction(question));
             }
         }else{
-            if (question.getWhWords().contains("when")) /*Zwracamy datę, string lub liczbę*/ {
+            if (question.getLemmatizated().get(0).equals("when")) /*Zwracamy datę, string lub liczbę*/ {
                 return new PredictionData(CATEGORY_LITERAL, Arrays.asList(TYPE_DATE));
             } else if (question.getWhWords().contains("hownumber")) {
                 System.out.println("hownumber " + question.getEntireText());
@@ -128,19 +128,52 @@ public class TypePrediction {
     }
 
     private List<String> generateResourceTypePrediction(Question question){
-        String queryString = "PREFIX dbres: <http://dbpedia.org/resource/>\n" +
-                "PREFIX rdf:<http://www.w3.org/1999/02/22-rdf-syntax-ns#>\n" +
-                "select ?o where {dbres:Basketball rdf:type ?o} LIMIT 10";
-        try (QueryExecution qexec = QueryExecution.service("http://dbpedia.org/sparql", queryString)) {
-            ResultSet results = qexec.execSelect();
-            while (results.hasNext()) {
-                QuerySolution soln = results.nextSolution();
-                RDFNode name = soln.get("o");
-                System.out.println(soln);
-            }
+        if(question.getLemmatizated().get(0).equals("who") ||
+                question.getLemmatizated().get(0).equals("whose") || question.getLemmatizated().get(0).equals("whom")){
+            return Arrays.asList("dbo:Person");
+        }else if(question.getLemmatizated().get(0).equals("where") ||
+                question.getLemmatizated().get(0).equals("in") && question.getLemmatizated().get(1).equals("which") ||
+                question.getLemmatizated().get(0).equals("in") && question.getLemmatizated().get(1).equals("what") ||
+                (question.getLemmatizated().get(0).equals("what") || question.getLemmatizated().get(0).equals("which")) &&
+                        (question.getLemmatizated().get(1).equals("city") ||
+                                question.getLemmatizated().get(1).equals("town") ||
+                                question.getLemmatizated().get(1).equals("place") ||
+                                question.getLemmatizated().get(1).equals("country") ||
+                                question.getLemmatizated().get(1).equals("state") ||
+                                question.getLemmatizated().get(1).equals("states"))
+        ){
+            return Arrays.asList("dbo:Place");
         }
 
-        return Arrays.asList("dbo:Place");
+        String word_to_search_for = "";
+        if(question.getLemmatizated().get(0).equals("which") && !question.getLemmatizated().get(1).equals("be")){
+            word_to_search_for = question.getTokens().get(1);
+        }
+
+        if(word_to_search_for != "") {
+            String queryString = "PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>\n" +
+                    "PREFIX rdfs:  <http://www.w3.org/2000/01/rdf-schema#>\n" +
+                    "PREFIX dbo:  <http://dbpedia.org/ontology/>\n" +
+                    "PREFIX owl: <http://www.w3.org/2002/07/owl#>\n" +
+                    "\n" +
+                    "SELECT ?item\n" +
+                    " WHERE\n" +
+                    "   {  \n" +
+                    "     ?item rdfs:label \"" + word_to_search_for.toLowerCase() + "\"@en. \n" +
+                    "     ?item rdf:type owl:Class.  \n" +
+                    "   }";
+
+            try (QueryExecution qexec = QueryExecution.service("http://dbpedia.org/sparql", queryString)) {
+                ResultSet results = qexec.execSelect();
+                while (results.hasNext()) {
+                    QuerySolution soln = results.nextSolution();
+                    RDFNode name = soln.get("item");
+                    System.out.println(name.asResource().getLocalName());
+                    return Arrays.asList("dbo:" + name.asResource().getLocalName());
+                }
+            }
+        }
+        return Arrays.asList("-");
     }
 
 }
