@@ -16,6 +16,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 
 public class TypePrediction {
     public static final String CATEGORY_RESOURCE = "resource";
@@ -66,7 +67,7 @@ public class TypePrediction {
         }
     }
 
-    public PredictionData getPrediction(String questionString, boolean showDataInConsole) throws IOException {
+    public PredictionData getPrediction(String questionString, boolean showDataInConsole) {
         //wyciaganie metadanych
         Question question = new Question(
                 questionString,
@@ -106,7 +107,6 @@ public class TypePrediction {
             if (question.getLemmatizated().get(0).equals("when")) /*Zwracamy datę, string lub liczbę*/ {
                 return new PredictionData(CATEGORY_LITERAL, Arrays.asList(TYPE_DATE));
             } else if (question.getWhWords().contains("hownumber")) {
-                System.out.println("hownumber " + question.getEntireText());
                 return new PredictionData(CATEGORY_LITERAL, Arrays.asList(TYPE_NUMBER));
             } else if (question.getWhWords().contains("how")
                     || question.getWhWords().contains("why")
@@ -150,7 +150,7 @@ public class TypePrediction {
             word_to_search_for = question.getTokens().get(1);
         }
 
-        if(word_to_search_for != "") {
+        if(!Objects.equals(word_to_search_for, "")) {
             String queryString = "PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>\n" +
                     "PREFIX rdfs:  <http://www.w3.org/2000/01/rdf-schema#>\n" +
                     "PREFIX dbo:  <http://dbpedia.org/ontology/>\n" +
@@ -168,7 +168,6 @@ public class TypePrediction {
                 while (results.hasNext()) {
                     QuerySolution soln = results.nextSolution();
                     RDFNode name = soln.get("item");
-                    System.out.println(name.asResource().getLocalName());
                     return Arrays.asList("dbo:" + name.asResource().getLocalName());
                 }
             }

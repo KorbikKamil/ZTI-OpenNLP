@@ -28,7 +28,7 @@ public class Question {
              NameFinderME nameFinderLocME,
              POSTaggerME posTagger,
              DictionaryLemmatizer lemmatizer
-    ) throws IOException {
+    ) {
         whWordsTags = new ArrayList<String>();
         whWordsTags.add("WRB");
         whWordsTags.add("WDT");
@@ -85,9 +85,6 @@ public class Question {
         for(int index = 0; index < partsOfSpeech.size(); ++index){
             if(whWordsTags.contains(partsOfSpeech.get(index))){
                 String whWord = lemmatizated.get(index);
-                if ("how".equals(whWord)) {
-                    System.out.println("how " + tokens.get(index + 1) + " -" + lemmatizated.get(index + 1) + "-");
-                }
                 if ("how".equals(whWord)
                         && ("O".equals(lemmatizated.get(index + 1))
                         || "many".equals(lemmatizated.get(index + 1))
@@ -97,7 +94,6 @@ public class Question {
                         || "old".equals(lemmatizated.get(index + 1))
                         || "big".equals(lemmatizated.get(index + 1))
                         || "long".equals(lemmatizated.get(index + 1)))) {
-                    System.out.println("dopisujemy number");
                     whWord += "number";
                 }
                 if(("which".equals(whWord) || "what".equals(whWord)) && "be".equals(lemmatizated.get(index + 1))){
