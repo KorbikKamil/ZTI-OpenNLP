@@ -109,28 +109,6 @@ public class Question {
         return to_return;
     }
 
-    /*private String getWhWordsOfTag(String tag) {
-        int index = partsOfSpeech.indexOf(tag);
-        if (index >= 0) {
-            String whWord = lemmatizated.get(index);
-            if ("how".equals(whWord)) {
-                System.out.println("how " + tokens.get(index + 1) + " -" + lemmatizated.get(index + 1) + "-");
-            }
-            if ("how".equals(whWord)
-                    && ("O".equals(lemmatizated.get(index + 1))
-                    || "many".equals(lemmatizated.get(index + 1))
-                    || "much".equals(lemmatizated.get(index + 1))
-                    || "deep".equals(lemmatizated.get(index + 1))
-                    || "old".equals(lemmatizated.get(index + 1))
-                    || "long".equals(lemmatizated.get(index + 1)))) {
-                System.out.println("dopisujemy number");
-                whWord += "number";
-            }
-            return whWord;
-        }
-        return null;
-    }*/
-
     public String getEntireText() {
         return entireText;
     }

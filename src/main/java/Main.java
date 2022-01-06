@@ -96,7 +96,7 @@ public class Main {
                         String correctCategory = object.getString("category");
                         ArrayList<String> correctTypes = new ArrayList<String>();
 
-                        JSONArray correctTypeArr = object.getJSONArray("type");//.get(0).toString();
+                        JSONArray correctTypeArr = object.getJSONArray("type");
                         for(int j = 0; j < correctTypeArr.length(); ++j){
                             correctTypes.add(correctTypeArr.getString(j));
                         }
@@ -139,14 +139,6 @@ public class Main {
                             }
                         }
 
-                        /*if(correctCategory.equals(TypePrediction.CATEGORY_LITERAL) && pd.category.equals(correctCategory)) {
-                            totalQuestionsLiteralCatNumber++;
-                            if(correctType.equals(pd.types.get(0))) {
-                                correctTypeNumber++;
-                            } else {
-                                System.out.println("question: " + questionString + "; correct type: " + correctType + "; our type:" + pd.types.get(0));
-                            }
-                        }*/
                         switch (correctCategory) {
                             case TypePrediction.CATEGORY_LITERAL: {
                                 totalQuestionsLiteralCatNumber++;
