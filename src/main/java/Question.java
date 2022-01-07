@@ -18,6 +18,7 @@ public class Question {
     private List<String> partsOfSpeech;
     private List<String> lemmatizated;
     private List<String> wh_words;
+    private List<String> nouns;
 
     private List<String> whWordsTags;
 
@@ -78,6 +79,10 @@ public class Question {
             wh_words = getWhWordsOfTag();
         }
 
+        {
+            nouns = getNounsFromTags();
+        }
+
     }
 
     private ArrayList<String> getWhWordsOfTag() {
@@ -100,6 +105,19 @@ public class Question {
                     whWord = "whatbe";
                 }
                 to_return.add(whWord);
+            }
+        }
+        return to_return;
+    }
+
+    private ArrayList<String> getNounsFromTags() {
+        ArrayList<String> to_return = new ArrayList<>();
+        for(int index = 0; index < partsOfSpeech.size(); ++index){
+            if(partsOfSpeech.get(index).equals("NN") || partsOfSpeech.get(index).equals("NNS")){
+                String noun = lemmatizated.get(index);
+                if(!noun.equals("O")) {
+                    to_return.add(noun);
+                }
             }
         }
         return to_return;
@@ -137,6 +155,10 @@ public class Question {
         return wh_words;
     }
 
+    public List<String> getNouns() {
+        return nouns;
+    }
+
     public String toString() {
         String to_ret = entireText + "\n";
         to_ret += "Tokens: " + tokens.toString() + "\n";
@@ -147,6 +169,7 @@ public class Question {
         to_ret += "Parts of speech: " + partsOfSpeech.toString() + "\n";
         to_ret += "Lemmatizated: " + lemmatizated.toString() + "\n";
         to_ret += "Wh-word: " + wh_words + "\n";
+        to_ret += "Nouns: " + nouns.toString() + "\n";
         return to_ret;
     }
 }

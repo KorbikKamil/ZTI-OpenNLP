@@ -14,9 +14,7 @@ import org.apache.jena.rdf.model.Resource;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 public class TypePrediction {
     public static final String CATEGORY_RESOURCE = "resource";
@@ -35,7 +33,11 @@ public class TypePrediction {
     private final POSTaggerME posTagger;
     private final DictionaryLemmatizer lemmatizer;
 
+    private final Map<String, String> cachedResponses;
+
     public TypePrediction() throws IOException {
+        cachedResponses = new TreeMap<>();
+
         {
             InputStream inputStream = new FileInputStream("src/main/resources/models/en-token.bin");
             TokenizerModel model = new TokenizerModel(inputStream);
@@ -148,27 +150,43 @@ public class TypePrediction {
         String word_to_search_for = "";
         if(question.getLemmatizated().get(0).equals("which") && !question.getLemmatizated().get(1).equals("be")){
             word_to_search_for = question.getTokens().get(1);
+        }else{
+            if(!question.getNouns().isEmpty()){
+                word_to_search_for = question.getNouns().get(0);
+            }
         }
 
         if(!Objects.equals(word_to_search_for, "")) {
-            String queryString = "PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>\n" +
-                    "PREFIX rdfs:  <http://www.w3.org/2000/01/rdf-schema#>\n" +
-                    "PREFIX dbo:  <http://dbpedia.org/ontology/>\n" +
-                    "PREFIX owl: <http://www.w3.org/2002/07/owl#>\n" +
-                    "\n" +
-                    "SELECT ?item\n" +
-                    " WHERE\n" +
-                    "   {  \n" +
-                    "     ?item rdfs:label \"" + word_to_search_for.toLowerCase() + "\"@en. \n" +
-                    "     ?item rdf:type owl:Class.  \n" +
-                    "   }";
+            if(cachedResponses.containsKey(word_to_search_for)){
+                if(cachedResponses.get(word_to_search_for).equals("")){
+                    return Arrays.asList("-");
+                }else{
+                    return Arrays.asList(cachedResponses.get(word_to_search_for));
+                }
+            }else{
+                String queryString = "PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>\n" +
+                        "PREFIX rdfs:  <http://www.w3.org/2000/01/rdf-schema#>\n" +
+                        "PREFIX dbo:  <http://dbpedia.org/ontology/>\n" +
+                        "PREFIX owl: <http://www.w3.org/2002/07/owl#>\n" +
+                        "\n" +
+                        "SELECT ?item\n" +
+                        " WHERE\n" +
+                        "   {  \n" +
+                        "     ?item rdfs:label \"" + word_to_search_for.toLowerCase() + "\"@en. \n" +
+                        "     ?item rdf:type owl:Class.  \n" +
+                        "   }";
 
-            try (QueryExecution qexec = QueryExecution.service("http://dbpedia.org/sparql", queryString)) {
-                ResultSet results = qexec.execSelect();
-                while (results.hasNext()) {
-                    QuerySolution soln = results.nextSolution();
-                    RDFNode name = soln.get("item");
-                    return Arrays.asList("dbo:" + name.asResource().getLocalName());
+                try (QueryExecution qexec = QueryExecution.service("http://dbpedia.org/sparql", queryString)) {
+                    ResultSet results = qexec.execSelect();
+                    if (results.hasNext()) {
+                        QuerySolution soln = results.nextSolution();
+                        RDFNode name = soln.get("item");
+                        cachedResponses.put(word_to_search_for, "dbo:" + name.asResource().getLocalName());
+                        return Arrays.asList("dbo:" + name.asResource().getLocalName());
+                    } else {
+                        cachedResponses.put(word_to_search_for, "");
+                        System.out.println(word_to_search_for);
+                    }
                 }
             }
         }
