@@ -185,7 +185,6 @@ public class TypePrediction {
                         return Arrays.asList("dbo:" + name.asResource().getLocalName());
                     } else {
                         cachedResponses.put(word_to_search_for, "");
-                        System.out.println(word_to_search_for);
                     }
                 }
             }
